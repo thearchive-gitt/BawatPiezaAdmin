@@ -5,13 +5,16 @@ import { DashboardShell } from "./dashboard-shell";
 import { DataIssues } from "./dashboard-primitives";
 import { DevicesTab } from "./devices-tab";
 import { FirmwareTab } from "./firmware-tab";
+import { InventoryTab } from "./inventory-tab";
+import { SalesCustomersTab } from "./sales-customers-tab";
+import { UserConcernsTab } from "./user-concerns-tab";
 import { MaintenanceTab } from "./maintenance-tab";
 import { OverviewTab } from "./overview-tab";
 import type { DashboardProps, DashboardTab } from "./types";
 
-function getAdminTabContent(tab: DashboardTab, data: DashboardData, fullName: string) {
+function getAdminTabContent(tab: DashboardTab, data: DashboardData) {
   const content: Record<DashboardTab, ReactNode> = {
-    overview: <OverviewTab data={data} fullName={fullName} role="admin" />,
+    overview: <OverviewTab data={data} role="admin" />,
     devices: (
       <DevicesTab
         hubs={data.hubs}
@@ -32,6 +35,9 @@ function getAdminTabContent(tab: DashboardTab, data: DashboardData, fullName: st
         count={data.userAccountCount}
       />
     ),
+    inventory: <InventoryTab products={data.storeProducts} sales={data.sales} />,
+    "sales-customers": <SalesCustomersTab customers={data.sales.customers} />,
+    concerns: <UserConcernsTab concerns={data.concerns} />,
     maintenance: (
       <MaintenanceTab
         data={data.health}
@@ -49,6 +55,7 @@ export function AdminDashboard({
   email,
   fullName,
   profile,
+  notifications,
 }: DashboardProps) {
   return (
     <DashboardShell
@@ -57,9 +64,10 @@ export function AdminDashboard({
       fullName={fullName}
       profile={profile}
       role="admin"
+      notifications={notifications}
     >
       <DataIssues issues={data.issues} />
-      {getAdminTabContent(activeTab, data, fullName)}
+      {getAdminTabContent(activeTab, data)}
     </DashboardShell>
   );
 }

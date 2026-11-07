@@ -14,7 +14,7 @@ function DeviceTable({
 
   if (hubs.length === 0) {
     return (
-      <p className="rounded-xl bg-[#f6f8f5] px-4 py-7 text-center text-sm text-[#718078]">
+      <p className="rounded-xl border border-[#292929] bg-[#181818] px-4 py-7 text-center text-sm text-[#999]">
         No device records are available for this account.
       </p>
     );
@@ -24,7 +24,7 @@ function DeviceTable({
     <div className="overflow-x-auto">
       <table className="w-full min-w-[760px] text-left text-sm">
         <thead>
-          <tr className="border-b border-[#edf0ec] text-[11px] uppercase tracking-[0.12em] text-[#929c95]">
+          <tr className="border-b border-[#292929] text-[11px] uppercase tracking-[0.12em] text-[#777]">
             <th className="pb-3 font-medium">Device</th>
             <th className="pb-3 font-medium">Device ID</th>
             <th className="pb-3 font-medium">Owner email</th>
@@ -36,22 +36,22 @@ function DeviceTable({
         <tbody>
           {hubs.map((hub) => (
             <tr
-              className="border-b border-[#f0f2ef] last:border-0"
+              className="border-b border-[#242424] last:border-0"
               key={hub.pairing_key}
             >
-              <td className="py-3.5 font-medium text-[#34463a]">
+              <td className="py-3.5 font-medium text-[#f0efe9]">
                 {hub.name || "Paired device"}
               </td>
-              <td className="py-3.5 font-mono text-xs text-[#718078]">
+              <td className="py-3.5 font-mono text-xs text-[#999]">
                 {hub.id}
               </td>
-              <td className="py-3.5 text-[#718078]">
+              <td className="py-3.5 text-[#b7b7b0]">
                 {hub.owner_email || "Not available"}
               </td>
-              <td className="py-3.5 text-[#718078]">
+              <td className="py-3.5 text-[#b7b7b0]">
                 {hub.installed_tiles ?? "—"}
               </td>
-              <td className="py-3.5 text-[#718078]">
+              <td className="py-3.5 text-[#b7b7b0]">
                 {firmwareByHub.get(hub.id) || "Not recorded"}
               </td>
               <td className="py-3.5">
@@ -89,7 +89,7 @@ export function DevicesTab({
       />
       <DeviceTable hubs={hubs} firmware={firmware} />
       {staffView ? (
-        <p className="mt-4 text-xs leading-5 text-[#849087]">
+        <p className="mt-4 text-xs leading-5 text-[#999]">
           Customer contact details are not shown here. They should be exposed
           only through authorized installation or maintenance assignments.
         </p>

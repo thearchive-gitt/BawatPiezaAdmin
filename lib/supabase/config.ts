@@ -49,7 +49,7 @@ export function getSupabaseConfig() {
 
   if (!rawUrl || !key) {
     throw new Error(
-      "Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY (or their NEXT_PUBLIC_ equivalents) in .env.local.",
+      "Missing Supabase configuration. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in the deployment environment.",
     );
   }
 

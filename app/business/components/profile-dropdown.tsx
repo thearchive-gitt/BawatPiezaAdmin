@@ -37,7 +37,7 @@ function EditProfileDialog({
   return (
     <dialog
       aria-labelledby="edit-profile-title"
-      className="fixed inset-0 z-[60] m-auto max-h-[90vh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl border border-[#e4e9e2] bg-white p-0 text-[#1d3025] shadow-2xl backdrop:bg-[#11261b]/55"
+      className="fixed inset-0 z-[60] m-auto max-h-[90vh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl border border-[#303030] bg-[#111] p-0 text-[#f7f7f2] shadow-2xl backdrop:bg-black/70"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
@@ -47,7 +47,7 @@ function EditProfileDialog({
       <form action={action} className="p-5 sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#718078]">
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#888]">
               Account settings
             </p>
             <h2
@@ -59,7 +59,7 @@ function EditProfileDialog({
           </div>
           <button
             aria-label="Close dialog"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg text-[#718078] transition hover:bg-[#f2f5f0]"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg text-[#888] transition hover:bg-[#242424]"
             onClick={onClose}
             type="button"
           >
@@ -68,52 +68,52 @@ function EditProfileDialog({
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <label className="text-xs font-medium text-[#526258]">
+          <label className="text-xs font-medium text-[#c8c6bd]">
             First name
             <input
               autoComplete="given-name"
-              className="mt-1.5 h-10 w-full rounded-lg border border-[#dce3dd] px-3 text-sm outline-none focus:border-[#3b7557] focus:ring-4 focus:ring-[#3b7557]/10"
+              className="mt-1.5 h-10 w-full rounded-lg border border-[#363636] bg-[#181818] px-3 text-sm text-[#f0efe9] outline-none focus:border-[#f97316] focus:ring-4 focus:ring-[#f97316]/20"
               defaultValue={profile.firstname}
               maxLength={100}
               name="firstname"
               required
             />
           </label>
-          <label className="text-xs font-medium text-[#526258]">
+          <label className="text-xs font-medium text-[#c8c6bd]">
             Last name
             <input
               autoComplete="family-name"
-              className="mt-1.5 h-10 w-full rounded-lg border border-[#dce3dd] px-3 text-sm outline-none focus:border-[#3b7557] focus:ring-4 focus:ring-[#3b7557]/10"
+              className="mt-1.5 h-10 w-full rounded-lg border border-[#363636] bg-[#181818] px-3 text-sm text-[#f0efe9] outline-none focus:border-[#f97316] focus:ring-4 focus:ring-[#f97316]/20"
               defaultValue={profile.lastname ?? ""}
               maxLength={100}
               name="lastname"
             />
           </label>
-          <label className="text-xs font-medium text-[#526258]">
+          <label className="text-xs font-medium text-[#c8c6bd]">
             Middle name
             <input
               autoComplete="additional-name"
-              className="mt-1.5 h-10 w-full rounded-lg border border-[#dce3dd] px-3 text-sm outline-none focus:border-[#3b7557] focus:ring-4 focus:ring-[#3b7557]/10"
+              className="mt-1.5 h-10 w-full rounded-lg border border-[#363636] bg-[#181818] px-3 text-sm text-[#f0efe9] outline-none focus:border-[#f97316] focus:ring-4 focus:ring-[#f97316]/20"
               defaultValue={profile.middlename ?? ""}
               maxLength={100}
               name="middlename"
             />
           </label>
-          <label className="text-xs font-medium text-[#526258]">
+          <label className="text-xs font-medium text-[#c8c6bd]">
             Contact number
             <input
               autoComplete="tel"
-              className="mt-1.5 h-10 w-full rounded-lg border border-[#dce3dd] px-3 text-sm outline-none focus:border-[#3b7557] focus:ring-4 focus:ring-[#3b7557]/10"
+              className="mt-1.5 h-10 w-full rounded-lg border border-[#363636] bg-[#181818] px-3 text-sm text-[#f0efe9] outline-none focus:border-[#f97316] focus:ring-4 focus:ring-[#f97316]/20"
               defaultValue={profile.contactNo ?? ""}
               maxLength={30}
               name="contactNo"
               type="tel"
             />
           </label>
-          <label className="text-xs font-medium text-[#526258] sm:col-span-2">
+          <label className="text-xs font-medium text-[#c8c6bd] sm:col-span-2">
             Email
             <input
-              className="mt-1.5 h-10 w-full rounded-lg border border-[#e7ebe5] bg-[#f6f8f5] px-3 text-sm text-[#849087]"
+              className="mt-1.5 h-10 w-full rounded-lg border border-[#363636] bg-[#181818] px-3 text-sm text-[#888]"
               readOnly
               value={email}
             />
@@ -144,7 +144,7 @@ function EditProfileDialog({
 
         <div className="mt-6 flex justify-end gap-2">
           <button
-            className="rounded-lg border border-[#dce3dd] px-4 py-2.5 text-xs font-semibold text-[#526258] transition hover:bg-[#f5f7f3]"
+            className="rounded-lg border border-[#363636] px-4 py-2.5 text-xs font-semibold text-[#c8c6bd] transition hover:bg-[#242424]"
             onClick={onClose}
             type="button"
           >
@@ -152,7 +152,7 @@ function EditProfileDialog({
           </button>
           {!state?.success ? (
             <button
-              className="rounded-lg bg-[#214d38] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#183d2d] disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-[#f97316] px-4 py-2.5 text-xs font-semibold text-[#090909] transition hover:bg-[#fb923c] disabled:cursor-not-allowed disabled:opacity-60"
               disabled={pending}
               type="submit"
             >
@@ -186,32 +186,32 @@ export function ProfileDropdown({
       <details className="relative">
         <summary
           aria-label="Open profile menu"
-          className="flex cursor-pointer list-none items-center gap-2 rounded-full p-1 transition hover:bg-[#f3f6f1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3b7557]"
+          className="flex cursor-pointer list-none items-center gap-2 rounded-full p-1 transition hover:bg-[#191919] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f97316]"
         >
           <span className="hidden text-right sm:block">
-            <span className="block text-xs font-semibold text-[#34463a]">
+            <span className="block text-xs font-semibold text-[#f0efe9]">
               {fullName || email}
             </span>
-            <span className="mt-1 block text-[10px] capitalize text-[#89948c]">
+            <span className="mt-1 block text-[10px] capitalize text-[#888]">
               Business account
             </span>
           </span>
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#dce9bd] text-xs font-bold text-[#28583b]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#2a1609] text-xs font-bold text-[#ff9a4d]">
             {initials(fullName || email)}
           </span>
-          <span aria-hidden="true" className="pr-1 text-xs text-[#718078]">
+          <span aria-hidden="true" className="pr-1 text-xs text-[#888]">
             ▾
           </span>
         </summary>
-        <div className="absolute right-0 top-full z-40 mt-2 w-64 rounded-xl border border-[#e7ebe5] bg-white p-2 shadow-xl">
-          <div className="border-b border-[#edf0ec] px-3 py-2">
-            <p className="truncate text-xs font-semibold text-[#34463a]">
+        <div className="absolute right-0 top-full z-40 mt-2 w-64 rounded-xl border border-[#303030] bg-[#151515] p-2 shadow-xl">
+          <div className="border-b border-[#292929] px-3 py-2">
+            <p className="truncate text-xs font-semibold text-[#f0efe9]">
               {fullName || "Business account"}
             </p>
-            <p className="mt-1 truncate text-[11px] text-[#849087]">{email}</p>
+            <p className="mt-1 truncate text-[11px] text-[#999]">{email}</p>
           </div>
           <button
-            className="mt-1 w-full rounded-lg px-3 py-2.5 text-left text-xs font-medium text-[#526258] transition hover:bg-[#f5f7f3]"
+            className="mt-1 w-full rounded-lg px-3 py-2.5 text-left text-xs font-medium text-[#c8c6bd] transition hover:bg-[#242424]"
             onClick={(event) => {
               const details = event.currentTarget.closest("details");
               if (details) details.open = false;

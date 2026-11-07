@@ -5,20 +5,21 @@ import { DataIssues } from "./dashboard-primitives";
 import { DevicesTab } from "./devices-tab";
 import { MaintenanceTab } from "./maintenance-tab";
 import { OverviewTab } from "./overview-tab";
+import { SalesCustomersTab } from "./sales-customers-tab";
+import { UserConcernsTab } from "./user-concerns-tab";
 import type { DashboardProps, DashboardTab } from "./types";
 
 type StaffDashboardTab = Extract<
   DashboardTab,
-  "overview" | "devices" | "maintenance"
+  "overview" | "devices" | "maintenance" | "concerns" | "sales-customers"
 >;
 
 function getStaffTabContent(
   tab: StaffDashboardTab,
   data: DashboardData,
-  fullName: string,
 ) {
   const content: Record<StaffDashboardTab, ReactNode> = {
-    overview: <OverviewTab data={data} fullName={fullName} role="staff" />,
+    overview: <OverviewTab data={data} role="staff" />,
     devices: (
       <DevicesTab
         hubs={data.hubs}
@@ -28,6 +29,8 @@ function getStaffTabContent(
       />
     ),
     maintenance: <MaintenanceTab data={data.health} staffView />,
+    concerns: <UserConcernsTab concerns={data.concerns} />,
+    "sales-customers": <SalesCustomersTab customers={data.sales.customers} />,
   };
 
   return content[tab];
@@ -39,11 +42,16 @@ export function StaffDashboard({
   email,
   fullName,
   profile,
+  notifications,
 }: DashboardProps) {
   const staffTab: StaffDashboardTab =
     activeTab === "devices" || activeTab === "maintenance"
       ? activeTab
-      : "overview";
+      : activeTab === "sales-customers"
+        ? activeTab
+      : activeTab === "concerns"
+        ? activeTab
+        : "overview";
 
   return (
     <DashboardShell
@@ -52,9 +60,10 @@ export function StaffDashboard({
       fullName={fullName}
       profile={profile}
       role="staff"
+      notifications={notifications}
     >
       <DataIssues issues={data.issues} />
-      {getStaffTabContent(staffTab, data, fullName)}
+      {getStaffTabContent(staffTab, data)}
     </DashboardShell>
   );
 }

@@ -8,6 +8,9 @@ export type DashboardTab =
   | "firmware"
   | "staff"
   | "customers"
+  | "inventory"
+  | "sales-customers"
+  | "concerns"
   | "maintenance";
 
 export type DashboardProps = {
@@ -22,4 +25,5 @@ export type DashboardProps = {
     contactNo: string | null;
   };
   role: BusinessRole;
+  notifications: DashboardData["notifications"];
 };

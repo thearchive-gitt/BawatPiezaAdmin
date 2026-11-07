@@ -33,8 +33,8 @@ export function BusinessAccountStatusButton({
         <button
           className={`rounded-lg px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
             isActive
-              ? "border border-[#efd1ce] text-[#a34339] hover:bg-[#fff1ef]"
-              : "bg-[#214d38] text-white hover:bg-[#183d2d]"
+              ? "border border-[#6b3030] text-[#ff8585] hover:bg-[#351719]"
+              : "bg-[#f97316] text-[#090909] hover:bg-[#fb923c]"
           }`}
           disabled={pending}
           type="submit"
@@ -47,11 +47,11 @@ export function BusinessAccountStatusButton({
         </button>
       </form>
       {state?.error ? (
-        <p aria-live="polite" className="mt-1 text-[11px] text-red-700" role="alert">
+        <p aria-live="polite" className="mt-1 text-[11px] text-[#ff8585]" role="alert">
           {state.error}
         </p>
       ) : state?.success ? (
-        <p aria-live="polite" className="mt-1 text-[11px] text-[#276344]" role="status">
+        <p aria-live="polite" className="mt-1 text-[11px] text-[#72d98d]" role="status">
           {state.success}
         </p>
       ) : null}

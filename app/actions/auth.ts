@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
+const backendUrl = (process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/+$/, "");
+
 export type LoginState = {
   error: string;
 } | null;
@@ -31,50 +33,25 @@ export async function signInBusiness(
     return { error: "Enter your business email and password." };
   }
 
-  const supabase = await createClient();
-  const { data, error: signInError } = await supabase.auth.signInWithPassword({
-    email: email.trim().toLowerCase(),
-    password,
+  const response = await fetch(`${backendUrl}/api/v1/auth/business-signin`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+    cache: "no-store",
   });
 
-  if (signInError || !data.user) {
-    return { error: "Email or password is incorrect." };
+  const body = (await response.json().catch(() => null)) as
+    | { session?: Parameters<Awaited<ReturnType<typeof createClient>>["auth"]["setSession"]>[0]; error?: string }
+    | null;
+  if (!response.ok || !body?.session) {
+    return { error: body?.error ?? "Email or password is incorrect." };
   }
 
-  const { data: account, error: accountError } = await supabase
-    .from("business_accounts")
-    .select("role, status, is_active")
-    .eq("id", data.user.id)
-    .maybeSingle();
-
-  if (accountError) {
-    console.error("Could not verify the business account after sign-in.", accountError);
-    const { error: signOutError } = await supabase.auth.signOut();
-    if (signOutError) {
-      console.error("Could not end an unverified business session.", signOutError);
-    }
-
-    return {
-      error:
-        "We couldn't verify your business access. Contact your administrator.",
-    };
-  }
-
-  if (
-    !account ||
-    (account.role !== "admin" && account.role !== "staff") ||
-    account.status !== "active" ||
-    !account.is_active
-  ) {
-    const { error: signOutError } = await supabase.auth.signOut();
-    if (signOutError) {
-      console.error("Could not end a session without business access.", signOutError);
-    }
-
-    return {
-      error:
-        "This account is not active for business access. Contact your administrator.",
-    };
+  const supabase = await createClient();
+  const { error: sessionError } = await supabase.auth.setSession(body.session);
+  if (sessionError) {
+    console.error("Could not persist the business session.", sessionError);
+    return { error: "Sign-in succeeded, but the session could not be saved." };
   }
 
   redirect("/business");

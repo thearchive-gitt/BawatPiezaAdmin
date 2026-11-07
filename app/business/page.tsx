@@ -23,6 +23,9 @@ function getAdminTab(tab: string | string[] | undefined): DashboardTab {
     case "firmware":
     case "staff":
     case "customers":
+    case "inventory":
+    case "sales-customers":
+    case "concerns":
     case "maintenance":
     case "overview":
       return tab;
@@ -33,12 +36,8 @@ function getAdminTab(tab: string | string[] | undefined): DashboardTab {
 
 function getStaffTab(
   tab: string | string[] | undefined,
-): Extract<DashboardTab, "overview" | "devices" | "maintenance"> {
-  if (
-    tab === "devices" ||
-    tab === "maintenance" ||
-    tab === "overview"
-  ) {
+): Extract<DashboardTab, "overview" | "devices" | "maintenance" | "concerns" | "sales-customers"> {
+  if (tab === "devices" || tab === "maintenance" || tab === "overview" || tab === "concerns" || tab === "sales-customers") {
     return tab;
   }
 
@@ -91,6 +90,7 @@ async function BusinessContent({ searchParams }: BusinessPageProps) {
         activeTab={activeTab}
         data={data}
         role="admin"
+        notifications={data.notifications}
       />
     );
   }
@@ -103,6 +103,7 @@ async function BusinessContent({ searchParams }: BusinessPageProps) {
       activeTab={activeTab}
       data={data}
       role="staff"
+      notifications={data.notifications}
     />
   );
 }

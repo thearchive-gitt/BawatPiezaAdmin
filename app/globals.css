@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #090909;
+  --foreground: #f7f7f2;
 }
 
 @theme inline {
@@ -12,15 +12,105 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Keep tabular and form surfaces consistent with the dashboard shell. */
+main table thead tr {
+  border-color: #292929 !important;
+  color: #777 !important;
+}
+
+main table tbody tr {
+  border-color: #242424 !important;
+}
+
+main table tbody td {
+  color: #b7b7b0 !important;
+}
+
+main table tbody td.font-medium {
+  color: #f0efe9 !important;
+}
+
+main input,
+main select {
+  border-color: #363636 !important;
+  background-color: #181818 !important;
+  color: #f0efe9 !important;
+  color-scheme: dark;
+}
+
+main input::placeholder {
+  color: #666 !important;
+}
+
+main input:focus,
+main select:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 4px rgb(249 115 22 / 12%) !important;
+}
+
+main dialog {
+  border-color: #303030 !important;
+  background-color: #111 !important;
+  color: #f7f7f2 !important;
+}
+
+main dialog label {
+  color: #c8c6bd !important;
+}
+
+main dialog button[type="submit"],
+main > div button.bg-\[\#214d38\] {
+  background-color: #f97316 !important;
+  color: #090909 !important;
+}
+
+main dialog button[type="submit"]:hover,
+main > div button.bg-\[\#214d38\]:hover {
+  background-color: #fb923c !important;
+}
+
+main dialog button[type="button"]:not([aria-label="Close dialog"]) {
+  border-color: #363636 !important;
+  color: #c8c6bd !important;
+}
+
+main button:disabled {
+  background-color: #292929 !important;
+  color: #777 !important;
+}
+
+main details > div {
+  border-color: #303030 !important;
+  background-color: #151515 !important;
+}
+
+main details summary {
+  color: #c8c6bd !important;
+}
+
+main details summary span {
+  color: #c8c6bd !important;
+}
+
+main details summary span.flex {
+  background-color: #2a1609 !important;
+  color: #ff9a4d !important;
+}
+
+main dialog button[aria-label="Close dialog"]:hover,
+main dialog button[type="button"]:hover {
+  background-color: #242424 !important;
+}
+
+main p.rounded-xl.bg-\[\#f6f8f5\],
+main p.rounded-xl.bg-\[\#fafbf9\] {
+  border: 1px solid #292929 !important;
+  background-color: #181818 !important;
+  color: #999 !important;
 }

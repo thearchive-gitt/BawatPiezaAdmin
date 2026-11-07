@@ -1,6 +1,6 @@
 # Business portal sign-in setup
 
-1. Copy `.env.example` to `.env.local` and set `SUPABASE_URL` to the plain project URL (for example, `https://your-project.supabase.co`) and `SUPABASE_ANON_KEY` to the anon/publishable key. Do not paste Markdown link formatting into `.env.local`.
+1. Configure the repository-level `backend/.env` locally with `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. In Vercel, set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `BACKEND_API_URL` in the admin project's environment; do not create a second Supabase project for this app.
 2. Run the migrations in `supabase/migrations/` in order in the Supabase SQL Editor. These create a separate `public.business_accounts` table, configure account and device-pairing read policies, and allow admins and assigned staff to read relevant device pairings and authorized device-owner emails.
 3. Create business credentials through Supabase Auth or your trusted account-provisioning process. Each business user must have a matching `public.business_accounts` row whose `id` matches the Auth user ID, `role` is `admin` or `staff`, `status` is `active`, and `is_active` is `true`.
 4. Start the app with `npm run dev`. The sign-in page is `/`; successful sign-in opens `/business`.
