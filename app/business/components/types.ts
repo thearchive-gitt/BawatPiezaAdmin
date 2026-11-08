@@ -6,12 +6,15 @@ export type DashboardTab =
   | "overview"
   | "devices"
   | "firmware"
+  | "mobile-updates"
   | "staff"
   | "customers"
   | "inventory"
   | "sales-customers"
+  | "delivery-map"
   | "concerns"
-  | "maintenance";
+  | "maintenance"
+  | "notifications";
 
 export type DashboardProps = {
   activeTab: DashboardTab;
@@ -23,6 +26,7 @@ export type DashboardProps = {
     middlename: string | null;
     lastname: string | null;
     contactNo: string | null;
+    avatar_url: string | null;
   };
   role: BusinessRole;
   notifications: DashboardData["notifications"];

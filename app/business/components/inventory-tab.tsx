@@ -21,12 +21,17 @@ export function InventoryTab({ products, sales }: InventoryTabProps) {
     if (state.success) router.refresh();
   }, [router, state.success]);
 
+  useEffect(() => {
+    const refreshTimer = window.setInterval(() => router.refresh(), 15000);
+    return () => window.clearInterval(refreshTimer);
+  }, [router]);
+
   return (
     <section className="space-y-6">
       <div>
         <p className="text-xs font-medium text-[#718078]">Ecommerce operations</p>
         <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.04em] text-[#f7f7f2] sm:text-3xl">Sales & inventory</h1>
-        <p className="mt-2 text-sm text-[#888]">Update available stock here and the ecommerce website will reflect it.</p>
+        <p className="mt-2 text-sm text-[#888]">Update available stock here. Successful ecommerce orders reduce these quantities automatically, and this view refreshes every 15 seconds.</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-2xl border border-[#292929] bg-[#111111] p-5">

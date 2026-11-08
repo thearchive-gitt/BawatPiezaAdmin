@@ -29,12 +29,13 @@ export function SalesCustomersTab({
           <p className="text-sm text-[#888]">No ecommerce customers yet.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-left text-xs">
+            <table className="w-full min-w-[1100px] text-left text-xs">
               <thead>
                 <tr className="border-b border-[#292929] text-[10px] uppercase tracking-[0.12em] text-[#777]">
                   <th className="px-3 py-3 font-medium">Customer</th>
                   <th className="px-3 py-3 font-medium">Product</th>
                   <th className="px-3 py-3 font-medium">Contact</th>
+                  <th className="px-3 py-3 font-medium">Delivery address</th>
                   <th className="px-3 py-3 font-medium">Order total</th>
                   <th className="px-3 py-3 font-medium">Payment</th>
                   <th className="px-3 py-3 font-medium">Delivery</th>
@@ -55,7 +56,12 @@ export function SalesCustomersTab({
                     </td>
                     <td className="px-3 py-4 text-[#999]">
                       <p>{customer.phone}</p>
-                      <p className="mt-1 max-w-44 truncate">{customer.address}</p>
+                      <p className="mt-1">{customer.email}</p>
+                    </td>
+                    <td className="max-w-64 px-3 py-4 text-[#999]">
+                      <p>{customer.address}</p>
+                      <p className="mt-1">{customer.city}, {customer.postalCode}</p>
+                      <p className="mt-1 text-[#777]">Landmark: {customer.landmark}</p>
                     </td>
                     <td className="px-3 py-4 font-semibold text-[#ff9a4d]">
                       ₱{customer.total.toLocaleString("en-PH", { minimumFractionDigits: 2 })}

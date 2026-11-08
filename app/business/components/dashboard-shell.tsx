@@ -10,6 +10,7 @@ const adminNavigation = [
   { tab: "staff", label: "Business accounts", icon: "♧" },
   { tab: "customers", label: "User accounts", icon: "◎" },
   { tab: "concerns", label: "User concerns", icon: "✉" },
+  { tab: "notifications", label: "Notifications", icon: "◉" },
   { tab: "maintenance", label: "Health & maintenance", icon: "⌁" },
 ] as const;
 
@@ -19,6 +20,7 @@ const staffNavigation = [
   { tab: "maintenance", label: "Maintenance activity", icon: "⌁" },
   { tab: "concerns", label: "User concerns", icon: "✉" },
   { tab: "sales-customers", label: "Customer orders", icon: "◉" },
+  { tab: "notifications", label: "Notifications", icon: "◉" },
 ] as const;
 
 export function DashboardShell({
@@ -39,6 +41,7 @@ export function DashboardShell({
     middlename: string | null;
     lastname: string | null;
     contactNo: string | null;
+    avatar_url: string | null;
   };
   role: BusinessRole;
   notifications: DashboardData["notifications"];
@@ -53,6 +56,8 @@ export function DashboardShell({
           ? "Inventory"
           : activeTab === "sales-customers"
             ? "Customers"
+            : activeTab === "notifications"
+              ? "Notifications"
             : navigation.find((item) => item.tab === activeTab)?.label ?? "Overview";
   const renderNavigationLink = (item: (typeof navigation)[number]) => (
     <Link
@@ -75,7 +80,7 @@ export function DashboardShell({
   return (
     <main className="min-h-screen bg-[#090909] text-[#f7f7f2]">
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
-        <aside className="sticky top-0 hidden h-screen w-[245px] shrink-0 self-start flex-col overflow-y-auto border-r border-[#252525] bg-[#0d0d0d] px-5 py-7 lg:flex">
+        <aside className="dashboard-sidebar sticky top-0 hidden h-screen w-[245px] shrink-0 self-start flex-col overflow-y-auto border-r border-[#252525] bg-[#0d0d0d] px-5 py-7 lg:flex">
           <div className="flex items-center gap-3 px-2">
             <Image
               alt="BawatPieza logo"
@@ -99,7 +104,7 @@ export function DashboardShell({
               <>
                 <details
                   className="group"
-                  open={activeTab === "devices" || activeTab === "firmware"}
+                  open={activeTab === "devices" || activeTab === "firmware" || activeTab === "mobile-updates"}
                 >
                   <summary className="flex cursor-pointer list-none items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-[#888] transition hover:bg-[#191919] hover:text-[#ff9a4d] [&::-webkit-details-marker]:hidden">
                     <span aria-hidden="true" className="w-4 text-center text-base">
@@ -114,6 +119,7 @@ export function DashboardShell({
                     {[
                       { tab: "devices", label: "Devices", icon: "⌘" },
                       { tab: "firmware", label: "Firmware", icon: "↻" },
+                      { tab: "mobile-updates", label: "Mobile app updates", icon: "⇧" },
                     ].map((item) => (
                       <Link
                         aria-current={activeTab === item.tab ? "page" : undefined}
@@ -135,7 +141,7 @@ export function DashboardShell({
                 </details>
                 <details
                   className="group"
-                  open={activeTab === "inventory" || activeTab === "sales-customers"}
+                  open={activeTab === "inventory" || activeTab === "sales-customers" || activeTab === "delivery-map"}
                 >
                   <summary className="flex cursor-pointer list-none items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-[#888] transition hover:bg-[#191919] hover:text-[#ff9a4d] [&::-webkit-details-marker]:hidden">
                     <span aria-hidden="true" className="w-4 text-center text-base">
@@ -150,6 +156,7 @@ export function DashboardShell({
                     {[
                       { tab: "inventory", label: "Inventory", icon: "▦" },
                       { tab: "sales-customers", label: "Customers", icon: "◉" },
+                      { tab: "delivery-map", label: "Delivery map", icon: "⌖" },
                     ].map((item) => (
                       <Link
                         aria-current={activeTab === item.tab ? "page" : undefined}
@@ -222,6 +229,9 @@ export function DashboardShell({
                       <p className="mt-1 text-[10px] leading-4 text-[#999]">{notification.message}</p>
                     </div>
                   ))}
+                  <Link className="block border-t border-[#292929] px-4 py-3 text-center text-xs font-medium text-[#ff9a4d] hover:bg-[#21160e]" href="/business?tab=notifications">
+                    View all notifications
+                  </Link>
                 </div>
               </details>
               <ProfileDropdown

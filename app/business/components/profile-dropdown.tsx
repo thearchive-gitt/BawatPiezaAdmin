@@ -21,6 +21,7 @@ function EditProfileDialog({
     middlename: string | null;
     lastname: string | null;
     contactNo: string | null;
+    avatar_url: string | null;
   };
   onClose: () => void;
 }) {
@@ -68,6 +69,13 @@ function EditProfileDialog({
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <p className="text-xs font-medium text-[#c8c6bd]">Profile photo</p>
+            <div className="mt-2 flex items-center gap-3">
+              {profile.avatar_url ? <img alt="" className="h-12 w-12 rounded-full object-cover" src={profile.avatar_url} /> : <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2a1609] text-sm font-bold text-[#ff9a4d]">{initials(profile.firstname)}</span>}
+              <input className="h-10 min-w-0 flex-1 rounded-lg border border-[#363636] bg-[#181818] px-3 text-xs text-[#f0efe9]" defaultValue={profile.avatar_url ?? ""} name="avatarUrl" placeholder="https://.../profile.jpg" type="url" />
+            </div>
+          </div>
           <label className="text-xs font-medium text-[#c8c6bd]">
             First name
             <input
@@ -177,10 +185,10 @@ export function ProfileDropdown({
     middlename: string | null;
     lastname: string | null;
     contactNo: string | null;
+    avatar_url: string | null;
   };
 }) {
   const [editing, setEditing] = useState(false);
-
   return (
     <>
       <details className="relative">
@@ -196,9 +204,11 @@ export function ProfileDropdown({
               Business account
             </span>
           </span>
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#2a1609] text-xs font-bold text-[#ff9a4d]">
-            {initials(fullName || email)}
-          </span>
+          {profile.avatar_url ? <img alt="" className="h-9 w-9 rounded-full object-cover" src={profile.avatar_url} /> : (
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#2a1609] text-xs font-bold text-[#ff9a4d]">
+              {initials(fullName || email)}
+            </span>
+          )}
           <span aria-hidden="true" className="pr-1 text-xs text-[#888]">
             ▾
           </span>

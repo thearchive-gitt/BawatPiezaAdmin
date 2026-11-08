@@ -74,6 +74,7 @@ export async function updateBusinessProfile(
         middlename: getText(formData, "middlename"),
         lastname: getText(formData, "lastname"),
         contactNo: getText(formData, "contactNo"),
+        avatarUrl: getText(formData, "avatarUrl"),
       }),
     });
     revalidatePath("/business");

@@ -10,6 +10,30 @@ export type LoginState = {
   error: string;
 } | null;
 
+function getUserFriendlyAuthError(error: string | undefined) {
+  const normalizedError = error?.toLowerCase() ?? "";
+
+  if (
+    normalizedError.includes("invalid login credentials") ||
+    normalizedError.includes("email or password is incorrect")
+  ) {
+    return "Incorrect email or password. Please try again.";
+  }
+
+  if (
+    normalizedError.includes("incorrect password") ||
+    normalizedError.includes("no business account exists") ||
+    normalizedError.includes("confirm your business email") ||
+    normalizedError.includes("valid business email") ||
+    normalizedError.includes("required") ||
+    normalizedError.includes("not active for business access")
+  ) {
+    return error ?? "Unable to sign in. Please try again.";
+  }
+
+  return "Unable to sign in. Please try again.";
+}
+
 export async function signInBusiness(
   _previousState: LoginState,
   formData: FormData,
@@ -32,19 +56,28 @@ export async function signInBusiness(
   ) {
     return { error: "Enter your business email and password." };
   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return { error: "Please enter a valid business email address." };
+  }
 
-  const response = await fetch(`${backendUrl}/api/v1/auth/business-signin`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${backendUrl}/api/v1/auth/business-signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+      cache: "no-store",
+    });
+  } catch (error) {
+    console.error("Business sign-in request failed.", error);
+    return { error: "Unable to reach the sign-in service. Please try again." };
+  }
 
   const body = (await response.json().catch(() => null)) as
     | { session?: Parameters<Awaited<ReturnType<typeof createClient>>["auth"]["setSession"]>[0]; error?: string }
     | null;
   if (!response.ok || !body?.session) {
-    return { error: body?.error ?? "Email or password is incorrect." };
+    return { error: getUserFriendlyAuthError(body?.error) };
   }
 
   const supabase = await createClient();

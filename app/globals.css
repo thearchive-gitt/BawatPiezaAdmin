@@ -18,6 +18,41 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.dashboard-sidebar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dashboard-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.dashboard-sidebar details > div {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  overflow: hidden;
+  transition: grid-template-rows 220ms ease, opacity 180ms ease;
+}
+
+.dashboard-sidebar details[open] > div {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.dashboard-sidebar details > div > * {
+  min-height: 0;
+}
+
+.dashboard-sidebar details summary span:last-child {
+  transition: transform 220ms ease, color 180ms ease;
+}
+
+.dashboard-sidebar details[open] summary span:last-child {
+  transform: rotate(180deg);
+  color: #ff9a4d !important;
+}
+
 /* Keep tabular and form surfaces consistent with the dashboard shell. */
 main table thead tr {
   border-color: #292929 !important;
@@ -96,6 +131,36 @@ main details summary {
 
 main details summary span {
   color: #c8c6bd !important;
+}
+
+.mapboxgl-popup-content {
+  color: #1f2933 !important;
+  background: #ffffff !important;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: #ffffff !important;
+  border-bottom-color: #ffffff !important;
+}
+
+.buyer-map-popup {
+  min-width: 220px;
+  color: #1f2933 !important;
+}
+
+.buyer-map-popup__name {
+  display: block;
+  color: #111827 !important;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.buyer-map-popup__text {
+  margin: 5px 0 0;
+  color: #374151 !important;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 main details summary span.flex {

@@ -18,7 +18,15 @@ export async function backendFetch(path: string, init: RequestInit = {}) {
   headers.set("Accept", "application/json");
   headers.set("Authorization", `Bearer ${data.session.access_token}`);
   if (init.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
-  const response = await fetch(`${backendUrl}${path}`, { ...init, headers, cache: "no-store" });
+  let response: Response;
+  try {
+    response = await fetch(`${backendUrl}${path}`, { ...init, headers, cache: "no-store" });
+  } catch (error) {
+    console.error("[backend-api] Backend request failed:", error);
+    throw new Error(
+      `The backend service is unavailable at ${backendUrl}. Start the backend service and try again.`,
+    );
+  }
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as { error?: string } | null;
     throw new Error(body?.error ?? `Backend request failed with status ${response.status}.`);

@@ -10,6 +10,7 @@ import {
 } from "@/lib/dashboard-data";
 import { getActiveBusinessAccount } from "@/lib/business-auth";
 import type { DashboardTab } from "@/app/business/components/types";
+import { LoadingTile } from "@/app/business/components/loading-tile";
 
 type BusinessPageProps = {
   searchParams: Promise<{ tab?: string | string[] }>;
@@ -21,13 +22,16 @@ function getAdminTab(tab: string | string[] | undefined): DashboardTab {
   switch (tab) {
     case "devices":
     case "firmware":
+    case "mobile-updates":
     case "staff":
     case "customers":
     case "inventory":
     case "sales-customers":
+    case "delivery-map":
     case "concerns":
     case "maintenance":
     case "overview":
+    case "notifications":
       return tab;
     default:
       return "overview";
@@ -36,8 +40,8 @@ function getAdminTab(tab: string | string[] | undefined): DashboardTab {
 
 function getStaffTab(
   tab: string | string[] | undefined,
-): Extract<DashboardTab, "overview" | "devices" | "maintenance" | "concerns" | "sales-customers"> {
-  if (tab === "devices" || tab === "maintenance" || tab === "overview" || tab === "concerns" || tab === "sales-customers") {
+): Extract<DashboardTab, "overview" | "devices" | "maintenance" | "concerns" | "sales-customers" | "notifications"> {
+  if (tab === "devices" || tab === "maintenance" || tab === "overview" || tab === "concerns" || tab === "sales-customers" || tab === "notifications") {
     return tab;
   }
 
@@ -48,8 +52,8 @@ export default function BusinessPage({ searchParams }: BusinessPageProps) {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-[#f5f6f2] text-sm text-[#718078]">
-          Loading your business dashboard...
+        <main className="flex min-h-screen items-center justify-center bg-[#090909] px-5">
+          <LoadingTile label="Loading business dashboard" />
         </main>
       }
     >
@@ -77,6 +81,7 @@ async function BusinessContent({ searchParams }: BusinessPageProps) {
       middlename: account.middlename,
       lastname: account.lastname,
       contactNo: account.contactNo,
+      avatar_url: account.avatar_url,
     },
     role: account.role,
   };

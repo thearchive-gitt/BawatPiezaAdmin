@@ -9,7 +9,10 @@ import { InventoryTab } from "./inventory-tab";
 import { SalesCustomersTab } from "./sales-customers-tab";
 import { UserConcernsTab } from "./user-concerns-tab";
 import { MaintenanceTab } from "./maintenance-tab";
+import { NotificationsPage } from "./notifications-page";
 import { OverviewTab } from "./overview-tab";
+import { DeliveryMapPage } from "./delivery-map-page";
+import { MobileUpdatesTab } from "./mobile-updates-tab";
 import type { DashboardProps, DashboardTab } from "./types";
 
 function getAdminTabContent(tab: DashboardTab, data: DashboardData) {
@@ -23,6 +26,7 @@ function getAdminTabContent(tab: DashboardTab, data: DashboardData) {
       />
     ),
     firmware: <FirmwareTab firmware={data.firmware} />,
+    "mobile-updates": <MobileUpdatesTab updates={data.mobileAppUpdates} />,
     staff: (
       <StaffAccountsTab
         accounts={data.businessAccounts}
@@ -37,6 +41,7 @@ function getAdminTabContent(tab: DashboardTab, data: DashboardData) {
     ),
     inventory: <InventoryTab products={data.storeProducts} sales={data.sales} />,
     "sales-customers": <SalesCustomersTab customers={data.sales.customers} />,
+    "delivery-map": <DeliveryMapPage orders={data.sales.customers} />,
     concerns: <UserConcernsTab concerns={data.concerns} />,
     maintenance: (
       <MaintenanceTab
@@ -44,6 +49,7 @@ function getAdminTabContent(tab: DashboardTab, data: DashboardData) {
         maintenanceCount={data.maintenanceHubCount}
       />
     ),
+    notifications: <NotificationsPage notifications={data.notifications} />,
   };
 
   return content[tab];

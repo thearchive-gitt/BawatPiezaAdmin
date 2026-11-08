@@ -16,6 +16,7 @@ export async function getActiveBusinessAccount() {
       role: "admin" | "staff";
       status: string;
       is_active: boolean;
+      avatar_url: string | null;
     } };
     return body.account;
   } catch (error) {

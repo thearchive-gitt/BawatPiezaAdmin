@@ -282,9 +282,13 @@ export function UserAccountsTab({
                     >
                       <td className="px-3 py-3.5">
                         <div className="flex items-center gap-3">
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2a1609] text-xs font-semibold text-[#ff9a4d]">
-                            {initials(name)}
-                          </span>
+                          {account.avatar_url ? (
+                            <img alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" src={account.avatar_url} />
+                          ) : (
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2a1609] text-xs font-semibold text-[#ff9a4d]">
+                              {initials(name)}
+                            </span>
+                          )}
                           <div>
                             <p className="font-medium text-[#f0efe9]">
                               {name || "Unnamed client"}

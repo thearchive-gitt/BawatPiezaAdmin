@@ -123,9 +123,9 @@ export function MetricCard({
   compact?: boolean;
 }) {
   return (
-    <article className={`rounded-2xl border border-[#292929] bg-gradient-to-br ${gradient} ${compact ? "p-4" : "p-5"} shadow-[0_12px_30px_rgba(0,0,0,0.2)]`}>
+    <article className={`rounded-2xl border border-white/10 bg-gradient-to-br ${gradient} ${compact ? "p-4" : "p-5"} shadow-[0_12px_30px_rgba(0,0,0,0.2)]`}>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-medium text-[#888]">{label}</p>
+        <p className="text-xs font-medium text-[#d2d2cc]">{label}</p>
         <span
         className={`flex ${compact ? "h-8 w-8 text-base" : "h-9 w-9 text-lg"} shrink-0 items-center justify-center rounded-xl ${accent}`}
         >
@@ -135,7 +135,7 @@ export function MetricCard({
       <p className={`${compact ? "mt-3 text-2xl" : "mt-4 text-3xl"} font-semibold tracking-[-0.05em] text-[#f7f7f2]`}>
         {value}
       </p>
-      <p className="mt-1 text-[11px] leading-4 text-[#888]">{detail}</p>
+      <p className="mt-1 text-[11px] leading-4 text-[#c2c2bb]">{detail}</p>
     </article>
   );
 }

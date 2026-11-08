@@ -22,6 +22,15 @@ export type DashboardData = {
     fw_version: string | null;
     last_connected: string | null;
   }>;
+  mobileAppUpdates: Array<{
+    id: string;
+    version: string;
+    platform: "android" | "ios" | "both";
+    download_url: string;
+    release_notes: string | null;
+    status: "draft" | "active" | "paused";
+    created_at: string;
+  }>;
   businessAccounts: Array<{
     id: string;
     firstname: string;
@@ -31,6 +40,7 @@ export type DashboardData = {
     role: "admin" | "staff";
     status: string;
     is_active: boolean;
+    avatar_url: string | null;
   }>;
   businessAccountCount: number | null;
   userAccounts: Array<{
@@ -42,6 +52,7 @@ export type DashboardData = {
     contactNo: string | null;
     status: string;
     is_active: boolean;
+    avatar_url: string | null;
     created_at: string;
   }>;
   userAccountCount: number | null;
@@ -59,6 +70,7 @@ export type DashboardData = {
     email: string;
     message: string;
     status: "unread" | "in_progress" | "resolved";
+    avatar_url: string | null;
   }>;
   notifications: Array<{
     id: string;
@@ -84,8 +96,25 @@ export type DashboardData = {
       email: string;
       phone: string;
       address: string;
+      city: string;
+      postalCode: string;
+      landmark: string;
+      region: string;
+      regionCode: string | null;
+      province: string;
+      provinceCode: string | null;
+      cityCode: string | null;
+      barangay: string;
+      barangayCode: string | null;
+      latitude: number | null;
+      longitude: number | null;
+      distanceKm: number | null;
+      locationSource: "device" | "address" | null;
+      locationAccuracyMeters: number | null;
+      avatar_url: string | null;
       items: Array<{ name: string; quantity: number }>;
       total: number;
+      paymentMethod: "Cash on delivery" | "GCash";
       orderStatus: string;
       deliveryStatus: "received" | "preparing" | "pickup" | "delivered" | "cancelled";
       paymentStatus: "Pending" | "Paid" | "Failed";
@@ -118,6 +147,7 @@ function normalizeDashboard(body: DashboardResponse): DashboardData {
   const sales = body.dashboard.sales;
   return {
     ...body.dashboard,
+    mobileAppUpdates: body.dashboard.mobileAppUpdates ?? [],
     concerns: body.dashboard.concerns ?? [],
     notifications: body.dashboard.notifications ?? [],
     sales: {
