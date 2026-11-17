@@ -120,6 +120,7 @@ function BusinessAccountDialog({
               required
             >
               <option value="staff">Staff</option>
+              <option value="site_assessor">Site assessor</option>
               <option value="admin">Admin</option>
             </select>
           </label>

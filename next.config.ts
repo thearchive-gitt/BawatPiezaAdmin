@@ -40,6 +40,11 @@ const nextConfig: NextConfig = {
   env: loadBackendPublicEnv(),
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "6mb",
+    },
+  },
   turbopack: {
     rules: {
       "*.css": {

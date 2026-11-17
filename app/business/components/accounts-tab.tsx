@@ -88,7 +88,7 @@ export function StaffAccountsTab({
     <Panel id="staff">
       <PanelHeading
         title="Business account management"
-        description="Admin and staff accounts stored in business_accounts"
+        description="Admin, staff, and site assessor accounts stored in business_accounts"
         action={`${count === null ? "—" : count.toLocaleString()} accounts`}
       />
       <div className="mb-5">

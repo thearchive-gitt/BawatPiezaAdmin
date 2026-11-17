@@ -8,11 +8,12 @@ import { OverviewTab } from "./overview-tab";
 import { SalesCustomersTab } from "./sales-customers-tab";
 import { UserConcernsTab } from "./user-concerns-tab";
 import { NotificationsPage } from "./notifications-page";
+import { ProjectDeliveryTab } from "./project-delivery-tab";
 import type { DashboardProps, DashboardTab } from "./types";
 
 type StaffDashboardTab = Extract<
   DashboardTab,
-  "overview" | "devices" | "maintenance" | "concerns" | "sales-customers"
+  "overview" | "devices" | "maintenance" | "concerns" | "sales-customers" | "project-delivery"
   | "notifications"
 >;
 
@@ -33,7 +34,8 @@ function getStaffTabContent(
     maintenance: <MaintenanceTab data={data.health} staffView />,
     concerns: <UserConcernsTab concerns={data.concerns} />,
     "sales-customers": <SalesCustomersTab customers={data.sales.customers} />,
-    notifications: <NotificationsPage notifications={data.notifications} />,
+    "project-delivery": <ProjectDeliveryTab projects={data.siteProjects} />,
+    notifications: <NotificationsPage notifications={data.notifications} role="staff" />,
   };
 
   return content[tab];
@@ -56,6 +58,8 @@ export function StaffDashboard({
         ? activeTab
         : activeTab === "notifications"
           ? activeTab
+            : activeTab === "project-delivery"
+              ? activeTab
         : "overview";
 
   return (

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { DashboardData } from "@/lib/dashboard-data";
-import { MetricCard, Panel, PanelHeading, StatusBadge } from "./dashboard-primitives";
+import { MetricCard, PaginationControls, Panel, PanelHeading, StatusBadge } from "./dashboard-primitives";
 import type { BusinessRole } from "./types";
 import { initials } from "./dashboard-primitives";
 
@@ -33,19 +33,60 @@ export function OverviewTab({ data, role }: OverviewTabProps) {
   const orders = sales.customers;
   const totalStock = data.storeProducts.reduce((sum, product) => sum + product.stock, 0);
   const filteredOrders = useMemo(() => orders.filter((order) => {
-    if (order.deliveryStatus === "cancelled" || order.paymentStatus === "Failed") return false;
+    if (order.deliveryStatus === "cancelled" || order.paymentStatus !== "Paid") return false;
     const orderDate = dateKey(order.created_at);
     if (period === "date") return selectedDate ? orderDate === selectedDate : true;
     if (period === "month") return selectedMonth ? orderDate.startsWith(selectedMonth) : true;
     return true;
   }), [orders, period, selectedDate, selectedMonth]);
+  const filteredProjectPayments = admin
+    ? sales.projectPayments.filter((payment) => {
+        const paymentDate = dateKey(payment.paidAt);
+        if (period === "date") return selectedDate ? paymentDate === selectedDate : true;
+        if (period === "month") return selectedMonth ? paymentDate.startsWith(selectedMonth) : true;
+        return true;
+      })
+    : [];
+  const salesRows = [
+    ...filteredOrders.map((order) => ({
+      id: `order-${order.id}`,
+      created_at: order.created_at,
+      type: "Product order",
+      buyer: order.name,
+      details: order.items.length > 0
+        ? order.items.map((item) => `${item.name} × ${item.quantity}`).join(", ")
+        : order.id,
+      payment: order.paymentMethod,
+      amount: order.total,
+      projectTotal: null as number | null,
+    })),
+    ...filteredProjectPayments.map((payment) => ({
+      id: `assessment-${payment.assessmentId}`,
+      created_at: payment.paidAt,
+      type: "Project downpayment",
+      buyer: payment.organization,
+      details: payment.quotationNo,
+      payment: "GCash · verified",
+      amount: payment.amount,
+      projectTotal: payment.projectTotal,
+    })),
+  ].sort((left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime());
+  const [salesPage, setSalesPage] = useState(1);
+  const salesPageSize = 10;
+  const salesPageCount = Math.max(1, Math.ceil(salesRows.length / salesPageSize));
+  const currentSalesPage = Math.min(salesPage, salesPageCount);
+  const visibleSalesRows = salesRows.slice((currentSalesPage - 1) * salesPageSize, currentSalesPage * salesPageSize);
 
-  const filteredRevenue = filteredOrders.reduce((sum, order) => sum + order.total, 0);
+  const filteredRevenue = salesRows.reduce((sum, sale) => sum + sale.amount, 0);
   const revenueByDate = filteredOrders.reduce<Record<string, number>>((totals, order) => {
     const key = dateKey(order.created_at);
     totals[key] = (totals[key] ?? 0) + order.total;
     return totals;
   }, {});
+  filteredProjectPayments.forEach((payment) => {
+    const key = dateKey(payment.paidAt);
+    revenueByDate[key] = (revenueByDate[key] ?? 0) + payment.amount;
+  });
   const rangeDays = chartRange === "7d" ? 7 : chartRange === "30d" ? 30 : chartRange === "90d" ? 90 : 365;
   const revenueTrend = Object.entries(revenueByDate)
     .sort(([left], [right]) => left.localeCompare(right))
@@ -68,9 +109,16 @@ export function OverviewTab({ data, role }: OverviewTabProps) {
     : 0;
   const paymentSplit = [
     { label: "COD", value: filteredOrders.filter((order) => order.paymentMethod === "Cash on delivery").length, color: "#f97316" },
-    { label: "GCash", value: filteredOrders.filter((order) => order.paymentMethod === "GCash").length, color: "#72c7ed" },
+    { label: "GCash orders", value: filteredOrders.filter((order) => order.paymentMethod === "GCash").length, color: "#72c7ed" },
+    { label: "Project downpayments", value: filteredProjectPayments.length, color: "#72d98d" },
   ];
   const paymentTotal = Math.max(paymentSplit.reduce((sum, item) => sum + item.value, 0), 1);
+  let paymentSplitEnd = 0;
+  const paymentGradient = `conic-gradient(${paymentSplit.map((item) => {
+    const start = paymentSplitEnd;
+    paymentSplitEnd += (item.value / paymentTotal) * 100;
+    return `${item.color} ${start}% ${paymentSplitEnd}%`;
+  }).join(", ")})`;
   const productTotals = Object.entries(
     filteredOrders.reduce<Record<string, number>>((totals, order) => {
       order.items.forEach((item) => {
@@ -129,14 +177,14 @@ export function OverviewTab({ data, role }: OverviewTabProps) {
             <Panel>
               <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs text-[#a6a6a0]">Total revenue</p>
+                  <p className="text-xs text-[#a6a6a0]">Paid revenue</p>
                   <div className="mt-1 flex items-baseline gap-2">
                     <strong className="text-3xl font-semibold tracking-[-0.06em] text-[#f7f7f2]">{formatRevenue(filteredRevenue)}</strong>
                     <span className={`text-xs font-semibold ${revenueChange >= 0 ? "text-[#63d59b]" : "text-[#ff8585]"}`}>
                       {revenueChange >= 0 ? "↑" : "↓"} {Math.abs(revenueChange).toFixed(2)}%
                     </span>
                   </div>
-                  <p className="mt-1 text-[11px] text-[#666]">Compared with the first day in this view</p>
+                  <p className="mt-1 text-[11px] text-[#666]">Received from paid orders and verified project downpayments</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   {(["7d", "30d", "90d", "1y"] as const).map((range) => (
@@ -190,15 +238,15 @@ export function OverviewTab({ data, role }: OverviewTabProps) {
 
             <div className="space-y-4">
             <Panel>
-              <PanelHeading title="Payment mix" description="Order share by payment method." action={`${filteredOrders.length} total`} />
+              <PanelHeading title="Payment mix" description="Paid product orders and verified project downpayments." action={`${salesRows.length} total`} />
               <div className="flex items-center gap-5">
                 <div
                   className="grid h-32 w-32 shrink-0 place-items-center rounded-full"
-                  style={{ background: `conic-gradient(${paymentSplit[0].color} 0 ${(paymentSplit[0].value / paymentTotal) * 100}%, ${paymentSplit[1].color} ${(paymentSplit[0].value / paymentTotal) * 100}% 100%)` }}
+                  style={{ background: paymentGradient }}
                 >
                   <div className="grid h-24 w-24 place-items-center rounded-full bg-[#111]">
-                    <strong className="text-2xl text-[#f7f7f2]">{filteredOrders.length}</strong>
-                    <span className="text-[10px] uppercase tracking-wider text-[#777]">orders</span>
+                    <strong className="text-2xl text-[#f7f7f2]">{salesRows.length}</strong>
+                    <span className="text-[10px] uppercase tracking-wider text-[#777]">paid sales</span>
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 space-y-4">
@@ -258,13 +306,14 @@ export function OverviewTab({ data, role }: OverviewTabProps) {
           </Panel>
 
           <Panel className="order-5 mt-4">
-            <PanelHeading title="Sales tracking" description="Filter completed and active ecommerce orders by date or month." action={`${filteredOrders.length} orders`} />
-            {filteredOrders.length === 0 ? <p className="text-sm text-[#888]">No sales match this filter.</p> : (
+            <PanelHeading title="Sales tracking" description="Paid product orders and admin-verified project downpayments, filtered by date or month." action={`${salesRows.length} paid sales`} />
+            {salesRows.length === 0 ? <p className="text-sm text-[#888]">No verified payments match this filter.</p> : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[760px] text-left text-xs">
-                  <thead><tr className="border-b border-[#292929] text-[10px] uppercase tracking-[0.12em] text-[#777]"><th className="px-3 py-3">Buyer</th><th className="px-3 py-3">Items</th><th className="px-3 py-3">Payment</th><th className="px-3 py-3">Total</th><th className="px-3 py-3">Date</th></tr></thead>
-                  <tbody>{filteredOrders.map((order) => <tr className="border-b border-[#242424] last:border-0" key={order.id}><td className="px-3 py-3"><div className="flex items-center gap-2">{order.avatar_url ? <img alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" src={order.avatar_url} /> : <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2a1609] text-[10px] font-semibold text-[#ff9a4d]">{initials(order.name)}</span>}<div className="min-w-0"><p className="truncate font-medium text-[#f0efe9]">{order.name}</p><p className="mt-1 truncate text-[#777]">{order.email}</p></div></div></td><td className="px-3 py-3 text-[#c8c6bd]">{order.items.map((item) => `${item.name} × ${item.quantity}`).join(", ")}</td><td className="px-3 py-3"><StatusBadge status={order.paymentMethod} /></td><td className="px-3 py-3 font-semibold text-[#ff9a4d]">{formatRevenue(order.total)}</td><td className="px-3 py-3 text-[#999]">{new Date(order.created_at).toLocaleDateString()}</td></tr>)}</tbody>
+                <table className="w-full min-w-[900px] text-left text-xs">
+                  <thead><tr className="border-b border-[#292929] text-[10px] uppercase tracking-[0.12em] text-[#777]"><th className="px-3 py-3">Sale</th><th className="px-3 py-3">Customer / organization</th><th className="px-3 py-3">Order / quotation</th><th className="px-3 py-3">Amount received</th><th className="px-3 py-3">Project total</th><th className="px-3 py-3">Payment date</th></tr></thead>
+                  <tbody>{visibleSalesRows.map((sale) => <tr className="border-b border-[#242424] last:border-0" key={sale.id}><td className="px-3 py-3"><StatusBadge status={sale.type} /></td><td className="px-3 py-3 font-medium text-[#f0efe9]">{sale.buyer}</td><td className="px-3 py-3 text-[#c8c6bd]">{sale.details}<div className="mt-1"><StatusBadge status={sale.payment} /></div></td><td className="px-3 py-3 font-semibold text-[#ff9a4d]">{formatRevenue(sale.amount)}</td><td className="px-3 py-3 text-[#c8c6bd]">{sale.projectTotal === null ? "—" : formatRevenue(sale.projectTotal)}</td><td className="px-3 py-3 text-[#999]">{new Date(sale.created_at).toLocaleDateString()}</td></tr>)}</tbody>
                 </table>
+                <PaginationControls currentPage={currentSalesPage} pageCount={salesPageCount} resultCount={salesRows.length} label="paid sales" onPageChange={setSalesPage} />
               </div>
             )}
           </Panel>

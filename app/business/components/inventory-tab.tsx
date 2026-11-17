@@ -39,7 +39,7 @@ export function InventoryTab({ products, sales }: InventoryTabProps) {
           <p className="mt-3 text-3xl font-semibold text-[#f7f7f2]">₱{sales.revenue.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</p>
         </div>
         <div className="rounded-2xl border border-[#292929] bg-[#111111] p-5">
-          <p className="text-xs text-[#888]">Orders</p>
+          <p className="text-xs text-[#888]">Paid sales</p>
           <p className="mt-3 text-3xl font-semibold text-[#f7f7f2]">{sales.orderCount.toLocaleString()}</p>
         </div>
       </div>
@@ -107,7 +107,7 @@ export function InventoryTab({ products, sales }: InventoryTabProps) {
         </div>
       </Panel>
       <Panel>
-        <PanelHeading title="Recent sales" description="Orders placed through the ecommerce website." />
+        <PanelHeading title="Recent paid sales" description="Paid product orders and verified project downpayments." />
         {sales.recentOrders.length === 0 ? <p className="text-sm text-[#888]">No ecommerce orders yet.</p> : (
           <div className="space-y-3">
             {sales.recentOrders.map((order) => (

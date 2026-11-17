@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { ProfileDropdown } from "./profile-dropdown";
 import type { BusinessRole, DashboardTab } from "./types";
 import type { DashboardData } from "@/lib/dashboard-data";
+import { openBusinessNotification } from "@/app/actions/notifications";
+import { getNotificationTab } from "@/lib/notification-navigation";
 
 const adminNavigation = [
   { tab: "overview", label: "Overview", icon: "◫" },
@@ -20,6 +22,12 @@ const staffNavigation = [
   { tab: "maintenance", label: "Maintenance activity", icon: "⌁" },
   { tab: "concerns", label: "User concerns", icon: "✉" },
   { tab: "sales-customers", label: "Customer orders", icon: "◉" },
+  { tab: "project-delivery", label: "Project delivery", icon: "⌖" },
+  { tab: "notifications", label: "Notifications", icon: "◉" },
+] as const;
+
+const siteAssessorNavigation = [
+  { tab: "site-assessments", label: "Assigned site visits", icon: "⌖" },
   { tab: "notifications", label: "Notifications", icon: "◉" },
 ] as const;
 
@@ -46,7 +54,7 @@ export function DashboardShell({
   role: BusinessRole;
   notifications: DashboardData["notifications"];
 }) {
-  const navigation = role === "admin" ? adminNavigation : staffNavigation;
+  const navigation = role === "admin" ? adminNavigation : role === "site_assessor" ? siteAssessorNavigation : staffNavigation;
   const activeTabTitle =
     activeTab === "devices"
       ? "Devices"
@@ -54,10 +62,18 @@ export function DashboardShell({
         ? "Firmware"
         : activeTab === "inventory"
           ? "Inventory"
+          : activeTab === "sales"
+            ? "Sales"
           : activeTab === "sales-customers"
             ? "Customers"
             : activeTab === "notifications"
               ? "Notifications"
+              : activeTab === "site-assessments"
+                ? "Site assessments"
+                : activeTab === "project-delivery"
+                  ? "Project delivery"
+                : activeTab === "gcash-setup"
+                  ? "GCash setup"
             : navigation.find((item) => item.tab === activeTab)?.label ?? "Overview";
   const renderNavigationLink = (item: (typeof navigation)[number]) => (
     <Link
@@ -141,7 +157,7 @@ export function DashboardShell({
                 </details>
                 <details
                   className="group"
-                  open={activeTab === "inventory" || activeTab === "sales-customers" || activeTab === "delivery-map"}
+                  open={activeTab === "inventory" || activeTab === "sales" || activeTab === "delivery-map" || activeTab === "site-assessments" || activeTab === "project-delivery" || activeTab === "gcash-setup"}
                 >
                   <summary className="flex cursor-pointer list-none items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-[#888] transition hover:bg-[#191919] hover:text-[#ff9a4d] [&::-webkit-details-marker]:hidden">
                     <span aria-hidden="true" className="w-4 text-center text-base">
@@ -155,8 +171,11 @@ export function DashboardShell({
                   <div className="ml-4 mt-1 space-y-1 border-l border-[#292929] pl-3">
                     {[
                       { tab: "inventory", label: "Inventory", icon: "▦" },
-                      { tab: "sales-customers", label: "Customers", icon: "◉" },
+                      { tab: "sales", label: "Sales", icon: "₱" },
                       { tab: "delivery-map", label: "Delivery map", icon: "⌖" },
+                      { tab: "site-assessments", label: "Site assessments", icon: "⌖" },
+                      { tab: "project-delivery", label: "Project delivery", icon: "⇢" },
+                      { tab: "gcash-setup", label: "GCash setup", icon: "▣" },
                     ].map((item) => (
                       <Link
                         aria-current={activeTab === item.tab ? "page" : undefined}
@@ -183,12 +202,14 @@ export function DashboardShell({
 
           <div className="mt-auto rounded-2xl border border-[#2b1a0e] bg-[#17100b] p-4">
             <p className="text-xs font-semibold text-[#ff9a4d]">
-              {role === "admin" ? "Administrator access" : "Staff workspace"}
+              {role === "admin" ? "Administrator access" : role === "site_assessor" ? "Site assessor workspace" : "Staff workspace"}
             </p>
             <p className="mt-1.5 text-[10px] leading-4 text-[#849087]">
               {role === "admin"
                 ? "Manage the business system and review operations."
-                : "View devices and activity available to your account."}
+                : role === "site_assessor"
+                  ? "Complete assigned site visits and submit technical evaluations."
+                  : "View devices and activity available to your account."}
             </p>
           </div>
         </aside>
@@ -197,7 +218,7 @@ export function DashboardShell({
           <header className="flex items-center justify-between border-b border-[#252525] bg-[#0d0d0d] px-5 py-4 sm:px-8">
             <div>
               <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#777]">
-                {role === "admin" ? "Administration" : "Staff workspace"}
+                {role === "admin" ? "Administration" : role === "site_assessor" ? "Site assessor workspace" : "Staff workspace"}
               </p>
               <p className="mt-1 text-sm font-semibold text-[#f7f7f2]">
                 Welcome{fullName ? `, ${fullName}` : ""}
@@ -223,12 +244,22 @@ export function DashboardShell({
                   </div>
                   {notifications.length === 0 ? (
                     <p className="px-4 py-5 text-xs text-[#888]">No notifications yet.</p>
-                  ) : notifications.slice(0, 8).map((notification) => (
-                    <div className={`border-b border-[#242424] px-4 py-3 ${notification.read_at ? "" : "bg-[#21160e]"}`} key={notification.id}>
-                      <p className="text-xs font-medium text-[#f7f7f2]">{notification.title}</p>
-                      <p className="mt-1 text-[10px] leading-4 text-[#999]">{notification.message}</p>
-                    </div>
-                  ))}
+                  ) : notifications.slice(0, 8).map((notification) => {
+                    const tab = getNotificationTab(notification, role);
+                    return (
+                      <form action={openBusinessNotification} key={notification.id}>
+                        <input name="notificationId" type="hidden" value={notification.id} />
+                        <input name="tab" type="hidden" value={tab} />
+                        <button
+                          className={`block w-full border-b border-[#242424] px-4 py-3 text-left hover:bg-[#21160e] ${notification.read_at ? "" : "bg-[#21160e]"}`}
+                          type="submit"
+                        >
+                          <p className="text-xs font-medium text-[#f7f7f2]">{notification.title}</p>
+                          <p className="mt-1 text-[10px] leading-4 text-[#999]">{notification.message}</p>
+                        </button>
+                      </form>
+                    );
+                  })}
                   <Link className="block border-t border-[#292929] px-4 py-3 text-center text-xs font-medium text-[#ff9a4d] hover:bg-[#21160e]" href="/business?tab=notifications">
                     View all notifications
                   </Link>

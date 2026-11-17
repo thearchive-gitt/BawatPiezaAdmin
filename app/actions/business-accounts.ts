@@ -26,7 +26,7 @@ export async function createBusinessAccount(
   const email = getText(formData, "email").toLowerCase();
   const role = getText(formData, "role");
   const password = formData.get("password");
-  if (!firstname || !lastname || !email || typeof password !== "string" || (role !== "admin" && role !== "staff")) {
+  if (!firstname || !lastname || !email || typeof password !== "string" || !["admin", "staff", "site_assessor"].includes(role)) {
     return { error: "Enter the required account details and choose a valid role." };
   }
   try {
@@ -35,7 +35,8 @@ export async function createBusinessAccount(
       body: JSON.stringify({ firstname, middlename, lastname, contactNo, email, role, password }),
     });
     revalidatePath("/business");
-    return { success: `${role === "admin" ? "Admin" : "Staff"} account created for ${email}. Share the temporary password securely.` };
+    const roleLabel = role === "site_assessor" ? "Site assessor" : role === "admin" ? "Admin" : "Staff";
+    return { success: `${roleLabel} account created for ${email}. Share the temporary password securely.` };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Could not create the business account." };
   }

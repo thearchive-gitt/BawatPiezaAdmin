@@ -13,7 +13,7 @@ export async function getActiveBusinessAccount() {
       lastname: string | null;
       contactNo: string | null;
       email: string;
-      role: "admin" | "staff";
+      role: "admin" | "staff" | "site_assessor";
       status: string;
       is_active: boolean;
       avatar_url: string | null;

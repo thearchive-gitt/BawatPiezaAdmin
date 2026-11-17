@@ -38,6 +38,14 @@ export function StatusBadge({ status }: { status: string }) {
   );
 }
 
+export function NewBadge() {
+  return (
+    <span className="inline-flex items-center rounded-full border border-[#185b8e] bg-[#102c42] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[#8bd0ff]">
+      New
+    </span>
+  );
+}
+
 export function Panel({
   children,
   className = "",
@@ -64,7 +72,7 @@ export function PanelHeading({
 }: {
   title: string;
   description?: string;
-  action?: string;
+  action?: ReactNode;
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
@@ -81,6 +89,50 @@ export function PanelHeading({
           {action}
         </span>
       ) : null}
+    </div>
+  );
+}
+
+export function PaginationControls({
+  currentPage,
+  pageCount,
+  resultCount,
+  label = "results",
+  onPageChange,
+}: {
+  currentPage: number;
+  pageCount: number;
+  resultCount: number;
+  label?: string;
+  onPageChange: (page: number) => void;
+}) {
+  if (resultCount === 0) return null;
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <p className="text-xs text-[#999]">
+        Page {currentPage} of {pageCount} · {resultCount.toLocaleString()} {label}
+      </p>
+      <nav aria-label={`${label} table pagination`} className="flex items-center gap-2">
+        <button
+          aria-label="Previous page"
+          className="rounded-lg border border-[#363636] px-3 py-2 text-xs font-medium text-[#c8c6bd] transition hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={currentPage <= 1}
+          onClick={() => onPageChange(currentPage - 1)}
+          type="button"
+        >
+          Previous
+        </button>
+        <button
+          aria-label="Next page"
+          className="rounded-lg border border-[#363636] px-3 py-2 text-xs font-medium text-[#c8c6bd] transition hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={currentPage >= pageCount}
+          onClick={() => onPageChange(currentPage + 1)}
+          type="button"
+        >
+          Next
+        </button>
+      </nav>
     </div>
   );
 }

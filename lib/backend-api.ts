@@ -2,13 +2,18 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 
+const configuredBackendUrl = process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
 const backendUrl = (
-  process.env.BACKEND_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:4000"
+  configuredBackendUrl ??
+  (process.env.NODE_ENV === "development" ? "http://localhost:4000" : "")
 ).replace(/\/+$/, "");
 
 export async function backendFetch(path: string, init: RequestInit = {}) {
+  if (!backendUrl) {
+    throw new Error(
+      "The backend service is not configured for this deployment. Set BACKEND_API_URL to the public URL of the backend API.",
+    );
+  }
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getSession();
   if (error || !data.session) {

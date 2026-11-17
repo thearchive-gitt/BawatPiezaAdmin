@@ -11,6 +11,7 @@ import {
 import { getActiveBusinessAccount } from "@/lib/business-auth";
 import type { DashboardTab } from "@/app/business/components/types";
 import { LoadingTile } from "@/app/business/components/loading-tile";
+import { SiteAssessorDashboard } from "@/app/business/components/site-assessor-dashboard";
 
 type BusinessPageProps = {
   searchParams: Promise<{ tab?: string | string[] }>;
@@ -26,12 +27,15 @@ function getAdminTab(tab: string | string[] | undefined): DashboardTab {
     case "staff":
     case "customers":
     case "inventory":
-    case "sales-customers":
+    case "sales":
     case "delivery-map":
     case "concerns":
     case "maintenance":
     case "overview":
     case "notifications":
+    case "site-assessments":
+    case "project-delivery":
+    case "gcash-setup":
       return tab;
     default:
       return "overview";
@@ -40,8 +44,8 @@ function getAdminTab(tab: string | string[] | undefined): DashboardTab {
 
 function getStaffTab(
   tab: string | string[] | undefined,
-): Extract<DashboardTab, "overview" | "devices" | "maintenance" | "concerns" | "sales-customers" | "notifications"> {
-  if (tab === "devices" || tab === "maintenance" || tab === "overview" || tab === "concerns" || tab === "sales-customers" || tab === "notifications") {
+): Extract<DashboardTab, "overview" | "devices" | "maintenance" | "concerns" | "sales-customers" | "project-delivery" | "notifications"> {
+  if (tab === "devices" || tab === "maintenance" || tab === "overview" || tab === "concerns" || tab === "sales-customers" || tab === "project-delivery" || tab === "notifications") {
     return tab;
   }
 
@@ -95,6 +99,19 @@ async function BusinessContent({ searchParams }: BusinessPageProps) {
         activeTab={activeTab}
         data={data}
         role="admin"
+        notifications={data.notifications}
+      />
+    );
+  }
+
+  if (account.role === "site_assessor") {
+    const data = await getStaffDashboardData(account.id);
+    return (
+      <SiteAssessorDashboard
+        {...dashboardProps}
+        activeTab={requestedTab === "notifications" ? "notifications" : "site-assessments"}
+        data={data}
+        role="site_assessor"
         notifications={data.notifications}
       />
     );

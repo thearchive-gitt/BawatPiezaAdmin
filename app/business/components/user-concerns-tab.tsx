@@ -1,11 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import type { DashboardData } from "@/lib/dashboard-data";
-import { Panel, PanelHeading, StatusBadge } from "./dashboard-primitives";
+import { NewBadge, PaginationControls, Panel, PanelHeading, StatusBadge } from "./dashboard-primitives";
 
 export function UserConcernsTab({
   concerns,
+  newConcernIds = [],
 }: {
   concerns: DashboardData["concerns"];
+  newConcernIds?: string[];
 }) {
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const pageCount = Math.max(1, Math.ceil(concerns.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const visibleConcerns = concerns.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <section className="space-y-6">
       <div>
@@ -38,10 +49,13 @@ export function UserConcernsTab({
                 </tr>
               </thead>
               <tbody>
-                {concerns.map((concern) => (
+                {visibleConcerns.map((concern) => (
                   <tr className="border-b border-[#242424] last:border-0" key={concern.id}>
                     <td className="px-3 py-4 align-top">
-                      <p className="font-medium text-[#f0efe9]">{concern.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-[#f0efe9]">{concern.name}</p>
+                        {newConcernIds.includes(concern.id) && <NewBadge />}
+                      </div>
                       <p className="mt-1 text-[#888]">{concern.email}</p>
                     </td>
                     <td className="max-w-[520px] whitespace-pre-wrap px-3 py-4 align-top leading-5 text-[#c8c6bd]">
@@ -58,6 +72,9 @@ export function UserConcernsTab({
               </tbody>
             </table>
           </div>
+        )}
+        {concerns.length > 0 && (
+          <PaginationControls currentPage={currentPage} pageCount={pageCount} resultCount={concerns.length} label="concerns" onPageChange={setPage} />
         )}
       </Panel>
     </section>

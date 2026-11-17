@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
-const backendUrl = (process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/+$/, "");
+const configuredBackendUrl = process.env.BACKEND_API_URL ?? process.env.NEXT_PUBLIC_API_URL;
+const backendUrl = (configuredBackendUrl ?? (process.env.NODE_ENV === "development" ? "http://localhost:4000" : "")).replace(/\/+$/, "");
 
 export type LoginState = {
   error: string;
@@ -61,6 +62,12 @@ export async function signInBusiness(
   }
 
   let response: Response;
+  if (!backendUrl) {
+    return {
+      error:
+        "The sign-in service is not configured for this deployment. Set BACKEND_API_URL in Vercel to the public URL of the backend API.",
+    };
+  }
   try {
     response = await fetch(`${backendUrl}/api/v1/auth/business-signin`, {
       method: "POST",

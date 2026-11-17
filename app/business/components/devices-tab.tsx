@@ -1,5 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import type { DashboardData } from "@/lib/dashboard-data";
-import { Panel, PanelHeading, StatusBadge } from "./dashboard-primitives";
+import { PaginationControls, Panel, PanelHeading, StatusBadge } from "./dashboard-primitives";
 
 function DeviceTable({
   hubs,
@@ -11,6 +14,11 @@ function DeviceTable({
   const firmwareByHub = new Map(
     firmware.map((item) => [item.hub_id, item.fw_version]),
   );
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const pageCount = Math.max(1, Math.ceil(hubs.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const visibleHubs = hubs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   if (hubs.length === 0) {
     return (
@@ -34,7 +42,7 @@ function DeviceTable({
           </tr>
         </thead>
         <tbody>
-          {hubs.map((hub) => (
+          {visibleHubs.map((hub) => (
             <tr
               className="border-b border-[#242424] last:border-0"
               key={hub.pairing_key}
@@ -61,6 +69,7 @@ function DeviceTable({
           ))}
         </tbody>
       </table>
+      <PaginationControls currentPage={currentPage} pageCount={pageCount} resultCount={hubs.length} label="devices" onPageChange={setPage} />
     </div>
   );
 }
